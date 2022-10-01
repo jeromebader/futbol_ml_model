@@ -1,2 +1,2 @@
-data/
-model/
+pkl*
+data/database.sqlite
