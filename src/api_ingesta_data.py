@@ -2,17 +2,9 @@ import numpy as np
 import pandas as pd
 import os
 import sqlite3
-from sklearn.model_selection import train_test_split
-from sklearn import preprocessing
 from datetime import datetime
-from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error, explained_variance_score
-from sklearn.ensemble import ExtraTreesRegressor
-import pickle
-from flask import Flask, request
-from flask import Blueprint
-from datetime import datetime
-import json
-import re
+from flask import Flask, request, Blueprint
+import requests
 
 
 def dbconn ():
@@ -22,6 +14,8 @@ def dbconn ():
 
 ## Link to the main APP
 ingest_data= Blueprint('ingest_data', __name__)
+from src.api_monitor_model import monitor_model
+
 
 # print(os.getcwd())
 # print (os.listdir())
@@ -41,6 +35,13 @@ def ingest():
     else:  # JSON data received
         request_data = request.get_json()
         df = pd.json_normalize(request_data )
+
+        if 'date' in df.columns:
+            print("ok")
+        else:
+            df["date"] = np.nan
+
+
         insanitas = []
 
         if request_data:
@@ -94,9 +95,15 @@ def ingest():
             if df["overall_rating"].all():
                 print(df[df["overall_rating"] != 0].index)
                 print ("Retrain")
+                r = requests.get('http://localhost:5000/monitor_model','GET')
+                print (type(r))
+                print ("---")
+                print (r.text)
 
             else:
                 print ("prediction?")
+
+
             
          
     dfhtml = df.to_html()

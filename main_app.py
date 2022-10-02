@@ -16,6 +16,7 @@ sys.path.insert(0, '/src')
 print (os.getcwd())
 from src.api_create_model import app_model
 from src.api_ingesta_data import ingest_data
+from src.api_monitor_model import monitor_model
 
 app = Flask(__name__)
 
@@ -42,6 +43,7 @@ app.secret_key = 'futbolMadrid2022'
 ## Register blueprints
 app.register_blueprint(app_model)
 app.register_blueprint(ingest_data)
+app.register_blueprint(monitor_model)
 
 
 
