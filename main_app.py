@@ -15,6 +15,7 @@ import sys
 sys.path.insert(0, '/src')
 print (os.getcwd())
 from src.api_create_model import app_model
+from src.api_ingesta_data import ingest_data
 
 app = Flask(__name__)
 
@@ -35,11 +36,12 @@ app.config["DEBUG"] = True
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
  
 # Define secret key to enable session
-app.secret_key = 'This is your secret key to utilize session in Flask'
+app.secret_key = 'futbolMadrid2022'
 
 
 ## Register blueprints
 app.register_blueprint(app_model)
+app.register_blueprint(ingest_data)
 
 
 
