@@ -118,18 +118,47 @@ def app_models():
 
     print("--"*30)
     print ("model results:")
-    print("\tMean Squad Error:", mean_squared_error(y_test, y_pred))
-    print("\tMean absolute error:", mean_absolute_error(y_test, y_pred))
-    print("\tR2 score:", r2_score(y_test, y_pred))
+    mse = mean_squared_error(y_test, y_pred)
+    print("\tMean Squad Error:", mse )
+    mae = mean_absolute_error(y_test, y_pred)
+    print("\tMean absolute error:", mae)
+    r2 = r2_score(y_test, y_pred)
+    print("\tR2 score:",r2 )
     print("--"*30)
+
+
 
     # Guardamos el modelo
     tiempo = datetime.today().strftime('%Y%m%d%H%M%S')
+    tiempo2 = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
     filename = f'./model/finalized_model_{tiempo}.pkl'
     pickle.dump(model, open(filename, 'wb'))
     print (f"model saved as: {filename}")
+
+    query = '''
+       CREATE TABLE IF NOT EXISTS model_performance (id INTEGER, model_name Varchar (255) NOT NULL, 
+       mae FLOAT NOT NULL,
+       mse FLOAT NULL,
+       r2 FLOAT NULL, 
+       timestamp DATETIME NULL,  
+       PRIMARY KEY("id" AUTOINCREMENT));  
+       
+        '''
+
+    cursor.execute(query)
+    inject = (filename,mae,mse,r2,tiempo2)
+
+    query = '''
+    INSERT INTO model_performance (model_name, mae, mse,r2,timestamp) VALUES (?, ?,?,?,?)
+    
+    '''
+
+    cursor.execute(query,inject)
+    conn.commit()
+    conn.close()
+
     print ("--"*30)
     print ("End")
 
-    return "Regression model created with"
+    return "Regression model created with success"
 
