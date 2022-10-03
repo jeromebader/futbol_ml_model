@@ -10,8 +10,6 @@ from general_functions import *
 
 app_model= Blueprint('app_model', __name__)
 
-# print(os.getcwd())
-# print (os.listdir())
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -27,10 +25,7 @@ def app_models():
     #     print(name[0])
 
 
-    query = '''
-    SELECT *
-    FROM Player_Attributes
-    '''
+    query = predictor_querry ## está en general functions!
     print ("--"*30)
     # Creamos dataframe
     dfplayer = sql_query(query,cursor)
@@ -41,7 +36,6 @@ def app_models():
     print ("--"*30)
     print ("training and prediction started, please wait!")
     ## Creamos el modelos
-    #
     #X = dfplayer.drop(columns=["overall_rating","time"])
     X = dfplayer[["reactions"]]
     y = dfplayer[["overall_rating"]]

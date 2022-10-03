@@ -43,10 +43,7 @@ def monitor():
 
             print ("retrieving data from DB")
 
-            query3 = '''
-            SELECT * 
-            FROM Player_Attributes
-            '''
+            query3 = predictor_querry 
             print ("--"*30)
             # Creamos dataframe
             dfplayer = sql_query(query3,cursor)

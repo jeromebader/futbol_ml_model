@@ -24,6 +24,14 @@ from sqlalchemy import create_engine
 
 # create sqlalchemy engine
 
+
+predictor_querry = '''
+    SELECT id, reactions, overall_rating, date, defensive_work_rate,attacking_work_rate, preferred_foot
+    FROM Player_Attributes
+    '''
+
+
+
 def creator_engine ():
     username = 'admin'
     password = '123456789'

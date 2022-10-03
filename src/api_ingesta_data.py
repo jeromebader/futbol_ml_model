@@ -41,17 +41,6 @@ def ingest():
 
         if request_data:
 
-            query = '''
-            SELECT * 
-            FROM Player_Attributes
-            '''
-            
-            conn,cursor = dbconn()
-            cursor.execute(query)
-            num_fields = len(cursor.description)
-            field_names = [i[0] for i in cursor.description]
-            print (field_names)
-            print ("---")
 
             if df["date"].isna().sum():
                 print ("date isna")
@@ -65,8 +54,6 @@ def ingest():
             for i in df.columns:
              if df[i].dtypes == "object":
           
-            # ^(?=.*SELECT.*FROM)(?!.*(?:CREATE|DROP|UPDATE|INSERT|ALTER|DELETE|ATTACH|DETACH)).*$
-            #SELECT\\s+?[^\\s]+?\\s+?FROM\\s+?[^\\s]+?\\s+?WHERE.*
 
                     # FILTER possible injections from JSON
                     try:

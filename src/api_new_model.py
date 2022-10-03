@@ -44,10 +44,7 @@ def retrain():
             r2_old = last_model[0]['r2']
 
             print ("retrieving data from DB")
-            query = '''
-            SELECT * 
-            FROM Player_Attributes
-            '''
+            query = predictor_querry 
             print ("--"*30)
             # Creamos dataframe
             dfplayer = sql_query(query,cursor)
