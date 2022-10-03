@@ -1,16 +1,13 @@
-import numpy as np
-import pandas as pd
+
 import os
 import sqlite3
-from sklearn.model_selection import train_test_split
-from sklearn import preprocessing
-from datetime import datetime
-from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error, explained_variance_score
-from sklearn.ensemble import ExtraTreesRegressor
-import pickle
-from flask import Flask, request, jsonify
-from flask import Blueprint
 import pymysql
+import sys
+
+module_path = os.path.dirname(os.path.abspath(__file__))
+if module_path not in sys.path:
+    sys.path.append(module_path)
+from general_functions import *
 
 db_connect= Blueprint('db_connect', __name__)
 
