@@ -86,10 +86,10 @@ def app_models():
 
 # Vemos las tablas en la DB
     conn, cursor = dbconn()
-    res = cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table'")
-    print ("tables:")
-    for name in res:
-        print(name[0])
+    # res = cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table'") ###
+    # print ("tables:")
+    # for name in res:
+    #     print(name[0])
 
     query = '''
     SELECT * 
