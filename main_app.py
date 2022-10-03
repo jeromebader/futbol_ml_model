@@ -1,25 +1,22 @@
 import os
 from werkzeug.utils import secure_filename
 from os.path import join, dirname, realpath
-from flask import Flask, jsonify, request, render_template, session, redirect
-import numpy as np
-import pandas as pd
-import pickle 
-from sklearn.preprocessing import MinMaxScaler
-from sklearn.pipeline import Pipeline
-from sklearn.linear_model import LinearRegression
-
+from flask import Flask, request, jsonify
+from flask import Blueprint
+import requests
 import sys
+module_path = os.path.dirname(os.path.abspath(__file__))
+if module_path not in sys.path:
+    sys.path.append(module_path)
+from src.general_functions import *
+
  
 # adding Folder_2 to the system path
-sys.path.insert(0, '/src')
+
 print (os.getcwd())
-from src.api_create_model import app_model
-from src.api_ingesta_data import ingest_data
-from src.api_monitor_model import monitor_model
-from src.api_connect_test import db_connect
 
 app = Flask(__name__)
+
 
 os.chdir(os.path.dirname(__file__))
 
@@ -40,13 +37,18 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 # Define secret key to enable session
 app.secret_key = 'futbolMadrid2022'
 
-
 ## Register blueprints
+from src.api_create_model import app_model
+from src.api_ingesta_data import ingest_data
+from src.api_monitor_model import monitor_model
+from src.api_connect_test import db_connect
+from src.api_new_model import retrain_model
+
 app.register_blueprint(app_model)
 app.register_blueprint(ingest_data)
 app.register_blueprint(monitor_model)
 app.register_blueprint(db_connect)
-
+app.register_blueprint(retrain_model)
 
 
 @app.route("/")

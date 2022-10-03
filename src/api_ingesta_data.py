@@ -1,16 +1,11 @@
-import numpy as np
-import pandas as pd
 import os
-import sqlite3
-from datetime import datetime
-from flask import Flask, request, Blueprint
+import sys
+from flask import Flask, jsonify, request, render_template, session, redirect
 import requests
-
-
-def dbconn ():
-    connection = sqlite3.connect('./data/database.sqlite')
-    cursor = connection.cursor()
-    return connection, cursor
+module_path = os.path.dirname(os.path.abspath(__file__))
+if module_path not in sys.path:
+    sys.path.append(module_path)
+from general_functions import *
 
 ## Link to the main APP
 ingest_data= Blueprint('ingest_data', __name__)
