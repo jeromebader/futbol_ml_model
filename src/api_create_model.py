@@ -10,8 +10,6 @@ from general_functions import *
 
 app_model= Blueprint('app_model', __name__)
 
-# print(os.getcwd())
-# print (os.listdir())
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -26,10 +24,8 @@ def app_models():
     # for name in res:
     #     print(name[0])
 
-    query = '''
-    SELECT * 
-    FROM Player_Attributes
-    '''
+
+    query = predictor_querry ## está en general functions!
     print ("--"*30)
     # Creamos dataframe
     dfplayer = sql_query(query,cursor)
@@ -40,8 +36,8 @@ def app_models():
     print ("--"*30)
     print ("training and prediction started, please wait!")
     ## Creamos el modelos
-    #
-    X = dfplayer.drop(columns=["overall_rating","time"])
+    #X = dfplayer.drop(columns=["overall_rating","time"])
+    X = dfplayer[["reactions"]]
     y = dfplayer[["overall_rating"]]
 
     X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=40)
@@ -66,29 +62,37 @@ def app_models():
     # Guardamos el modelo
     tiempo = datetime.today().strftime('%Y%m%d%H%M%S')
     tiempo2 = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
-    filename = f'./model/finalized_model_{tiempo}.pkl'
+    print (os.getcwd())
+    filename = f'../model/finalized_model_{tiempo}.pkl'
     pickle.dump(model, open(filename, 'wb'))
     print (f"model saved as: {filename}")
 
-    query = '''
-       CREATE TABLE IF NOT EXISTS model_performance (id INTEGER, model_name Varchar (255) NOT NULL, 
-       mae FLOAT NOT NULL,
-       mse FLOAT NULL,
-       r2 FLOAT NULL, 
-       timestamp DATETIME NULL,  
-       PRIMARY KEY("id" AUTOINCREMENT));  
+    query = ''' 
+    CREATE TABLE model_performancez (
+	id INT AUTO_INCREMENT,
+	model_name VARCHAR(255),
+	mae DOUBLE,
+	mse DOUBLE,
+	r2 DOUBLE,
+	timestamp DATETIME,
+	PRIMARY KEY (id)
+    );
+
        
-        '''
+      '''
 
     cursor.execute(query)
-    inject = (filename,mae,mse,r2,tiempo2)
-
-    query = '''
-    INSERT INTO model_performance (model_name, mae, mse,r2,timestamp) VALUES (?, ?,?,?,?)
     
-    '''
+    # inject = (filename,round(float(mae),4),round(float(mse),4),round(float(r2),3))
 
-    cursor.execute(query,inject)
+    # query2 = '''
+    # INSERT INTO model_performances (model_name, mae, mse,r2)
+    # VALUES (?, ?,?,?)
+    # '''
+
+    cursor.execute('''INSERT INTO model_performancez (model_name, mae, mse, r2) VALUES (%s, %s, %s, %s);''', (filename,round(float(mae),4),round(float(mse),4),round(float(r2),3), ))
+
+    #cursor.execute(query2,inject)
     conn.commit()
     conn.close()
 

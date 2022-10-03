@@ -19,46 +19,42 @@ def monitor():
 
             query = '''
                     SELECT * 
-                    FROM model_performance
+                    FROM model_performancez
             '''
             
             conn,cursor = dbconn()
-            result = cursor.execute(query)
-            print (result.fetchall())
+            cursor.execute(query)
+            print (cursor.fetchall())
 
 
-            query = '''
-            SELECT model_name, mae,mse,r2 FROM model_performance WHERE id=(
-            SELECT max(id) FROM model_performance
-                                        )
-
-            
+            query2 = '''
+            SELECT model_name, mae,mse,r2 FROM model_performancez WHERE id=(SELECT MAX(id) FROM model_performancez);
             '''
 
             # Reading previous model performance
-            result = cursor.execute(query)
-            last_model = result.fetchall()
+            cursor.execute(query2)
+            last_model = cursor.fetchall()
             print ("Last_model:",last_model)
-            filename = last_model[0][0]
-            mae_old = last_model[0][1]
-            mse_old = last_model[0][2]
-            r2_old = last_model[0][2]
+            print(last_model[0]['mae'])
+            filename = last_model[0]['model_name']
+            mae_old = last_model[0]['mae']
+            mse_old = last_model[0]['mse']
+            r2_old = last_model[0]['r2']
 
+            print ("retrieving data from DB")
 
-            query = '''
-            SELECT * 
-            FROM Player_Attributes
-            '''
+            query3 = predictor_querry 
             print ("--"*30)
             # Creamos dataframe
-            dfplayer = sql_query(query,cursor)
+            dfplayer = sql_query(query3,cursor)
             dfplayer = data_featuring(dfplayer)
+            dfplayer.info()
 
             print ("--"*30)
             print ("training and prediction started, please wait!")
             ## Creamos el modelos
             #
-            X = dfplayer.drop(columns=["overall_rating","time"])
+            X = dfplayer[["reactions"]]
             y = dfplayer[["overall_rating"]]
 
             X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=40)

@@ -21,36 +21,30 @@ def retrain():
 
             query = '''
                     SELECT * 
-                    FROM model_performance
+                    FROM model_performancez
             '''
             
             conn,cursor = dbconn()
-            result = cursor.execute(query)
-            print (result.fetchall())
+            cursor.execute(query)
+            print (cursor.fetchall())
 
 
-            query = '''
-            SELECT model_name, mae,mse,r2 FROM model_performance WHERE id=(
-            SELECT max(id) FROM model_performance
-                                        )
-
-            
+            query2 = '''
+            SELECT model_name, mae,mse,r2 FROM model_performancez WHERE id=(SELECT MAX(id) FROM model_performancez);
             '''
 
             # Reading previous model performance
-            result = cursor.execute(query)
-            last_model = result.fetchall()
+            cursor.execute(query2)
+            last_model = cursor.fetchall()
             print ("Last_model:",last_model)
-            filename = last_model[0][0]
-            mae_old = last_model[0][1]
-            mse_old = last_model[0][2]
-            r2_old = last_model[0][2]
+            print(last_model[0]['mae'])
+            filename = last_model[0]['model_name']
+            mae_old = last_model[0]['mae']
+            mse_old = last_model[0]['mse']
+            r2_old = last_model[0]['r2']
 
-
-            query = '''
-            SELECT * 
-            FROM Player_Attributes
-            '''
+            print ("retrieving data from DB")
+            query = predictor_querry 
             print ("--"*30)
             # Creamos dataframe
             dfplayer = sql_query(query,cursor)
@@ -60,7 +54,8 @@ def retrain():
             print ("training and prediction started, please wait!")
             ## Creamos el modelos
             #
-            X = dfplayer.drop(columns=["overall_rating","time"])
+            # dfplayer.drop(columns=["overall_rating","time"])
+            X = dfplayer[["reactions"]]
             y = dfplayer[["overall_rating"]]
             
             model = pickle.load(open(filename,'rb'))
@@ -70,7 +65,7 @@ def retrain():
             dateTimeObj = datetime.now()
             timestampStr = dateTimeObj.strftime("%Y%m%d%H%")
             scores = cross_val_score(model, X, y, cv=10, scoring='neg_mean_absolute_error')
-            model = pickle.load(open(f'new_model_{timestampStr}','wb'))
+            model = pickle.load(open(f'../model/new_model_{timestampStr}','wb'))
 
 
             return "New model retrained and saved as advertising_model_v1. The results of MAE with cross validation of 10 folds is: " + str(abs(round(scores.mean(),2)))
