@@ -14,7 +14,7 @@ def dbconn ():
 
 ## Link to the main APP
 ingest_data= Blueprint('ingest_data', __name__)
-from src.api_monitor_model import monitor_model
+#from src.api_monitor_model import monitor_model
 
 
 # print(os.getcwd())
