@@ -83,8 +83,8 @@ def ingest():
 
 
             df = df.drop(columns=["id"])
-
-            df.to_sql('Player_Attributes', con=conn, if_exists='append',index=False)
+            engine = creator_engine()
+            df.to_sql('Player_Attributes', con=engine, if_exists='append',index=False)
 
             ## IF y value -> overall rating in JSON -> go to retrain
             if df["overall_rating"].all():

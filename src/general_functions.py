@@ -20,6 +20,18 @@ import sqlite3
 from datetime import datetime
 from sklearn import preprocessing
 
+from sqlalchemy import create_engine
+
+# create sqlalchemy engine
+
+def creator_engine ():
+    username = 'admin'
+    password = '123456789'
+    host = 'database.ctcaznptufxn.us-east-1.rds.amazonaws.com'
+    port = 3306
+
+    engine = create_engine("mysql+pymysql://{user}:{pw}@{host}/{db}".format(user = username, pw = password, host = host, db = 'football_database'))
+    return engine
 
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
