@@ -28,4 +28,4 @@ def showData():
     df = sql_query(query,cursor)
     # pandas dataframe to html table flask
     uploaded_df_html = df.to_html(col_space='120px',justify='left')
-    return render_template('show_csv_data.html', data_var = uploaded_df_html, num_data=50)
+    return render_template('show_db_data.html', data_var = uploaded_df_html, num_data=100)
