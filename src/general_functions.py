@@ -26,7 +26,7 @@ from sqlalchemy import create_engine
 
 
 predictor_querry = '''
-    SELECT id, reactions, overall_rating, date, defensive_work_rate,attacking_work_rate, preferred_foot
+    SELECT reactions, overall_rating, date, defensive_work_rate,attacking_work_rate, preferred_foot
     FROM Player_Attributes
     '''
 
@@ -121,3 +121,18 @@ def data_featuring (dfplayer):
     replace_nan_mode(dfplayer)
 
     return dfplayer
+
+
+def checkTableExists(dbcon, dbcur, tablename):
+    
+    dbcur.execute("""
+        SELECT COUNT(*)
+        FROM information_schema.tables
+        WHERE table_name = '{0}'
+        """.format(tablename.replace('\'', '\'\'')))
+    if dbcur.fetchone()[0] == 1:
+        dbcur.close()
+        return True
+
+    dbcur.close()
+    return False

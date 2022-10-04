@@ -43,7 +43,9 @@ def monitor():
 
             print ("retrieving data from DB")
 
-            query3 = predictor_querry 
+            query3 = '''SELECT reactions, overall_rating, date, defensive_work_rate,attacking_work_rate, preferred_foot
+        FROM Player_Attributes ORDER BY id ASC limit 0,300;
+        '''
             print ("--"*30)
             # Creamos dataframe
             dfplayer = sql_query(query3,cursor)
@@ -74,7 +76,7 @@ def monitor():
 
             if mae<mae_old and mse<mse_old and r2<r2_old:
                 message = "Performance of model lower than before, sending to training"
-                ### CALLING API OF TRAINING
+                r = requests.get('http://localhost:5000/retrain','GET')
             
             else:
                 message = "Performance of model is higher than before, training not necessary"

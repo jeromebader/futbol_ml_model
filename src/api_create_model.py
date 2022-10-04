@@ -67,21 +67,35 @@ def app_models():
     pickle.dump(model, open(filename, 'wb'))
     print (f"model saved as: {filename}")
 
-    query = ''' 
-    CREATE TABLE model_performancez (
-	id INT AUTO_INCREMENT,
-	model_name VARCHAR(255),
-	mae DOUBLE,
-	mse DOUBLE,
-	r2 DOUBLE,
-	timestamp DATETIME,
-	PRIMARY KEY (id)
-    );
 
-       
-      '''
+    ## LA PRIMERA VEZ SI CORRE LA APP DESPUES COMENTAR
 
-    cursor.execute(query)
+    # tablexist = checkTableExists(conn,cursor, 'model_performancez')
+
+    # try:
+    #     if tablexist == False:
+    #         query = ''' 
+    #         CREATE TABLE model_performancez (
+    #         id INT AUTO_INCREMENT,
+    #         model_name VARCHAR(255),
+    #         mae DOUBLE,
+    #         mse DOUBLE,
+    #         r2 DOUBLE,
+    #         timestamp DATETIME,
+    #         PRIMARY KEY (id)
+    #         );
+
+            
+    #         '''
+    #         cursor.execute(query)
+
+    #     else: 
+    #         pass
+
+    # except:
+    #     pass
+
+    
     
     # inject = (filename,round(float(mae),4),round(float(mse),4),round(float(r2),3))
 

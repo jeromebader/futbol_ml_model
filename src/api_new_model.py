@@ -19,14 +19,14 @@ retrain_model = Blueprint('retrain_model', __name__)
 @retrain_model.route("/retrain", methods=['GET'])
 def retrain():
 
-            query = '''
-                    SELECT * 
-                    FROM model_performancez
-            '''
+            # query = '''
+            #         SELECT * 
+            #         FROM model_performancez
+            # '''
             
             conn,cursor = dbconn()
-            cursor.execute(query)
-            print (cursor.fetchall())
+            # cursor.execute(query)
+            # print (cursor.fetchall())
 
 
             query2 = '''
@@ -44,7 +44,9 @@ def retrain():
             r2_old = last_model[0]['r2']
 
             print ("retrieving data from DB")
-            query = predictor_querry 
+            query = '''SELECT reactions, overall_rating, date, defensive_work_rate,attacking_work_rate, preferred_foot
+        FROM Player_Attributes ORDER BY id ASC limit 0,300;
+        '''
             print ("--"*30)
             # Creamos dataframe
             dfplayer = sql_query(query,cursor)
@@ -60,15 +62,36 @@ def retrain():
             
             model = pickle.load(open(filename,'rb'))
             model.fit(X,y)
+            y_pred = model.predict(X)
 
-            X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=40)
+            #X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=40)
+            y_test = y
             dateTimeObj = datetime.now()
-            timestampStr = dateTimeObj.strftime("%Y%m%d%H%")
+            timestampStr = dateTimeObj.strftime("%Y%m%d%H")
             scores = cross_val_score(model, X, y, cv=10, scoring='neg_mean_absolute_error')
-            model = pickle.load(open(f'../model/new_model_{timestampStr}','wb'))
+            filename = f'../model/trained_model_{timestampStr}t.pkl'
+            pickle.dump(model, open(filename, 'wb'))
+            
+            print("--"*30)
+            print ("model results:")
+            mse = mean_squared_error(y_test, y_pred)
+            print("\tMean Squad Error:", mse )
+            mae = mean_absolute_error(y_test, y_pred)
+            print("\tMean absolute error:", mae)
+            r2 = r2_score(y_test, y_pred)
+            print("\tR2 score:",r2 )
+            print("--"*30)
 
+            
+            cursor.execute('''INSERT INTO model_performancez (model_name, mae, mse, r2) VALUES (%s, %s, %s, %s);''', (filename,round(float(mae),4),round(float(mse),4),round(float(r2),3), ))
 
-            return "New model retrained and saved as advertising_model_v1. The results of MAE with cross validation of 10 folds is: " + str(abs(round(scores.mean(),2)))
+            #cursor.execute(query2,inject)
+            conn.commit()
+            conn.close()
+
+            message = f'<p style="color:green;"> Modelo entrenado y guardado {filename}  , MAE :' + str(abs(round(scores.mean(),2))) + '<p>'
+
+            return render_template('index.html',msg_train=message)
 
 
 
