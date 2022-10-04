@@ -69,8 +69,21 @@
       }
     </style>
 
-    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script>
+      $('form').submit(function(){
+      $('#waiting').show();
+      $(this).children('submit[type=submit]').prop('disabled', true);
+    });
+
+    </script>
+
+
+
   </head>
+
+
+
   <body>
     
 <main>
@@ -87,10 +100,11 @@
         <div class="h-100 p-5 bg-light rounded-3">
           <h2>Upload data</h2>
           <p> Here you can upload a .json file </p>
-          <form method="POST" enctype="multipart/form-data" action="/">
-            <input class="btn btn-outline-secondary" type="file" id="myFile" name="uploaded-file" accept=".csv">
-            <input class="btn btn-primary btn-md" type="submit" value="Upload file">
+          <form id="form" method="POST" enctype="multipart/form-data" action="/uploads">
+            <input class="btn btn-outline-secondary" type="file" id="uploaded-file" name="uploaded-file" accept=".json">
+            <input class="btn btn-primary btn-md" name="submit" id="submit" type="submit" value="Upload file">
         </form>
+        <div id="waiting" style="display:none">Please wait...</div>
         {{ saved | safe }}
         </div>
       </div>
@@ -98,9 +112,10 @@
         <div class="h-100 p-5 text-white bg-warning border rounded-3">
           <h2>Retrain the model</h2>
           <p>Retrain the model with new data</p>
-          <form method="GET" enctype="multipart/form-data" action="/predict">
+          <form method="GET" enctype="multipart/form-data" action="/retrain">
             <input class="btn btn-secondary"  type="submit" value="Retrain" />
         </form>
+        {{ msg_train | safe }}
         </div>
       </div>
     </div>
