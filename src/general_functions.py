@@ -1,5 +1,10 @@
 from flask import Flask, jsonify, request, render_template, session, redirect
-import pickle 
+try:
+   import cPickle as pickle
+except:
+   import pickle
+
+from joblib import dump, load
 import requests
 from fileinput import filename
 from sklearn.preprocessing import MinMaxScaler
@@ -10,7 +15,7 @@ from sklearn import preprocessing
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error, explained_variance_score
 from sklearn.ensemble import ExtraTreesRegressor
 from flask import Blueprint
-import pymysql
+import MySQLdb
 import numpy as np
 import pandas as pd
 from datetime import datetime
@@ -51,12 +56,12 @@ def dbconn ():
     host = 'database.ctcaznptufxn.us-east-1.rds.amazonaws.com'
     port = 3306
 
-    connection = pymysql.connect(host = host,
+    connection = MySQLdb.connect(host = host,
                      user = username,
                      password = password,
                      database='football_database',
-                     cursorclass = pymysql.cursors.DictCursor
-                     
+
+
     )
 
     cursor = connection.cursor()
@@ -74,7 +79,7 @@ def sql_query(query,cursor):
     # Ejecuta la query
     cursor.execute(query)
 
-    # Almacena los datos de la query 
+    # Almacena los datos de la query
     ans = cursor.fetchall()
 
     # Obtenemos los nombres de las columnas de la tabla
@@ -87,11 +92,11 @@ def replace_nan_mode(data):
     '''
     Funcion que rellena e iguala los valores de las columnas con la moda,
     para la correcta visualización y estudio del dataset.
-    
+
     Args:
         data = dataset que contiene los datos con objeto de estudio.
-    
-    Returns: 
+
+    Returns:
         dataframe listo para su estudio y visualización.
     '''
     iguala = [column for column in data.columns if data[column].isna().sum() > 0]
@@ -124,7 +129,7 @@ def data_featuring (dfplayer):
 
 
 def checkTableExists(dbcon, dbcur, tablename):
-    
+
     dbcur.execute("""
         SELECT COUNT(*)
         FROM information_schema.tables

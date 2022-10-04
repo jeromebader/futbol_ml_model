@@ -31,14 +31,14 @@ def uploading():
         datas = json.load(uploaded_file)
         filename = secure_filename(uploaded_file.filename)
         file_location = f"../uploads/{uploaded_file.filename}"
-       
+
         with open(file_location, 'w', encoding='utf-8') as f:
             json.dump(datas, f, ensure_ascii=False, indent=4)
 
-        requests.post('http://localhost:5000/ingest_data', json=datas, headers=headers)
+        requests.post('https://jeroba.pythonanywhere.com/ingest_data', json=datas, headers=headers)
         #r = requests.post('http://localhost:5000/ingest_data', data=datas)
         print(datas)
-        saved = '<p style="color:green;">data sentS to json</p>'
+        saved = '<p style="color:green;"> JSON data sent to Endpoint</p>'
 
         return render_template('index.html',saved=saved)
 

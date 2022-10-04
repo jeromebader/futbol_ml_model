@@ -7,7 +7,7 @@ if module_path not in sys.path:
     sys.path.append(module_path)
 from general_functions import *
 from sklearn.model_selection import cross_val_score
-
+from joblib import dump, load
 os.chdir(os.path.dirname(__file__))
 
 app = Flask(__name__)
@@ -20,10 +20,10 @@ retrain_model = Blueprint('retrain_model', __name__)
 def retrain():
 
             # query = '''
-            #         SELECT * 
+            #         SELECT *
             #         FROM model_performancez
             # '''
-            
+
             conn,cursor = dbconn()
             # cursor.execute(query)
             # print (cursor.fetchall())
@@ -37,11 +37,11 @@ def retrain():
             cursor.execute(query2)
             last_model = cursor.fetchall()
             print ("Last_model:",last_model)
-            print(last_model[0]['mae'])
-            filename = last_model[0]['model_name']
-            mae_old = last_model[0]['mae']
-            mse_old = last_model[0]['mse']
-            r2_old = last_model[0]['r2']
+            print(last_model[0][1])
+            filename = last_model[0][0]
+            mae_old = last_model[0][1]
+            mse_old = last_model[0][2]
+            r2_old = last_model[0][3]
 
             print ("retrieving data from DB")
             query = '''SELECT reactions, overall_rating, date, defensive_work_rate,attacking_work_rate, preferred_foot
@@ -59,8 +59,9 @@ def retrain():
             # dfplayer.drop(columns=["overall_rating","time"])
             X = dfplayer[["reactions"]]
             y = dfplayer[["overall_rating"]]
-            
-            model = pickle.load(open(filename,'rb'))
+
+            filename = filename.strip("'")
+            model = load(filename)
             model.fit(X,y)
             y_pred = model.predict(X)
 
@@ -69,9 +70,9 @@ def retrain():
             dateTimeObj = datetime.now()
             timestampStr = dateTimeObj.strftime("%Y%m%d%H")
             scores = cross_val_score(model, X, y, cv=10, scoring='neg_mean_absolute_error')
-            filename = f'../model/trained_model_{timestampStr}t.pkl'
-            pickle.dump(model, open(filename, 'wb'))
-            
+            filename = f'trained_model_{timestampStr}.joblib'
+            dump(model, f'trained_model_{timestampStr}.joblib')
+
             print("--"*30)
             print ("model results:")
             mse = mean_squared_error(y_test, y_pred)
@@ -82,7 +83,7 @@ def retrain():
             print("\tR2 score:",r2 )
             print("--"*30)
 
-            
+
             cursor.execute('''INSERT INTO model_performancez (model_name, mae, mse, r2) VALUES (%s, %s, %s, %s);''', (filename,round(float(mae),4),round(float(mse),4),round(float(r2),3), ))
 
             #cursor.execute(query2,inject)

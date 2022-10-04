@@ -11,7 +11,7 @@ if module_path not in sys.path:
     sys.path.append(module_path)
 from src.general_functions import *
 
- 
+
 # adding Folder_2 to the system path
 
 print (os.getcwd())
@@ -22,19 +22,19 @@ app = Flask(__name__)
 os.chdir(os.path.dirname(__file__))
 
 #*** Flask configuration
- 
+
 # Define folder to save uploaded files to process further
 UPLOAD_FOLDER = join(dirname(realpath(__file__)), 'uploads/')
- 
+
 # Define allowed files for uploading (for this example I want only csv file)
 ALLOWED_EXTENSIONS = {'json'}
- 
+
 app = Flask(__name__, template_folder='templates', static_folder='static')
 app.config["DEBUG"] = True
 
 # Configure upload file path flask
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
- 
+
 # Define secret key to enable session
 app.secret_key = 'futbolMadrid2022'
 
@@ -61,8 +61,8 @@ app.register_blueprint(uploads)
 @app.route("/")
 def main():
     """Function for rendering the main page"""
-    
+
     return render_template('index.html')
 
 #if __name__ == "__main__":
-app.run()
+#app.run()

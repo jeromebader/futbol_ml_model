@@ -8,6 +8,7 @@ if module_path not in sys.path:
 from general_functions import *
 
 
+
 os.chdir(os.path.dirname(__file__))
 
 app = Flask(__name__)
@@ -18,7 +19,7 @@ predict = Blueprint('predict', __name__)
 
 @predict.route("/predict", methods=['GET'])
 def predictions():
-    
+
 
     conn,cursor = dbconn()
 
@@ -30,9 +31,9 @@ def predictions():
     cursor.execute(query2)
     last_model = cursor.fetchall()
     print ("Last_model:",last_model)
-    print(last_model[0]['mae'])
-    filename = last_model[0]['model_name']
-    
+    print(last_model[0][1])
+    filename = last_model[0][0]
+
 
     print ("retrieving data from DB")
     try:
@@ -48,7 +49,7 @@ def predictions():
          dfplayer = sql_query(query,cursor)
 
     #dfplayer = dfplayer[dfplayer["overall_rating"].isna()]
-    
+
 
 
     print ("--"*30)
@@ -56,9 +57,9 @@ def predictions():
     # Creamos dataframe
     #dfplayer = sql_query(query,cursor)
     #dfplayer = dfplayer[~dfplayer["reactions"].isna()]
-    
+
     dfplayer = data_featuring(dfplayer)
-    
+
     print (dfplayer)
     print ("--"*30)
     print ("training and prediction started, please wait!")
@@ -67,9 +68,23 @@ def predictions():
     # dfplayer.drop(columns=["overall_rating","time"])
     X = dfplayer[["reactions"]]
     #y = dfplayer[["overall_rating"]]
-    
+
     #X_train, X_test, y_train, y_test = train_test_split(X,y,test_size=0.2,random_state=40)
-    model = pickle.load(open(filename,'rb'))
+
+    #with open(filename, 'wb') as f:
+       # pickle.dump(model, f,protocol=2)
+    filename = filename.strip("'")
+    #print (filename)
+    #f = open(filename, "r")
+    #print(f.read())
+    print ("--"*20)
+
+    #sys.path.append(module_path)
+    #with open(filename, 'rb') as fs:
+          #  model = pickle.load(fs)
+
+    model = load(filename)
+    #model = pickle.load(open(filename,'rb'))
     results = model.predict(X)
     df_new = dfplayer
     df_new["Est_overall_rating"] = np.round(results,2)
